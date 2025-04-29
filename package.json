@@ -1,0 +1,9 @@
+# omnichat/package.json
+{
+  "name": "omnichat",
+  "version": "1.0.1",
+  "scripts": {
+    "build": "node esbuild"
+  },
+  "dependencies": {}
+}
