@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OmniChat</title>
+    <style>
+        .chat-container {
+            border: 1px solid #d1d8dd;
+            padding: 15px;
+            border-radius: 5px;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        .chat-messages {
+            background: #f5f7fa;
+            padding: 10px;
+            height: 400px;
+            overflow-y: scroll;
+            margin-bottom: 10px;
+        }
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+        .message-input {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <h2>OmniChat</h2>
+        <select id="channel-select" class="form-control" style="margin-bottom: 10px;">
+            {% for channel in channels %}
+            <option value="{{ channel.name }}">{{ channel.channel_name }}</option>
+            {% endfor %}
+        </select>
+        <div class="chat-messages">
+            {% for msg in messages %}
+            {% set align = 'right' if not msg.is_incoming else 'left' %}
+            <div style="text-align: {{ align }}; margin: 5px;">
+                {% if msg.message_type == 'Text' %}
+                <p>{{ msg.message_content }}</p>
+                {% elif msg.message_type == 'Image' %}
+                <img src="{{ msg.file_url }}" style="max-width: 200px;">
+                {% elif msg.message_type == 'Video' %}
+                <video src="{{ msg.file_url }}" controls style="max-width: 200px;"></video>
+                {% else %}
+                <a href="{{ msg.file_url }}">Download File</a>
+                {% endif %}
+                <small>{{ frappe.utils.format_datetime(msg.timestamp) }}</small>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="chat-input">
+            <input type="text" id="message-input" class="form-control message-input" placeholder="พิมพ์ข้อความ...">
+            <input type="file" id="file-input" style="display: none;">
+            <button class="btn btn-primary" id="send-btn">ส่ง</button>
+            <button class="btn btn-secondary" id="file-btn">แนบไฟล์</button>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Scroll ไปที่ข้อความล่าสุด
+            $('.chat-messages').scrollTop($('.chat-messages')[0].scrollHeight);
+
+            // ส่งข้อความ
+            $('#send-btn').click(function() {
+                const message = $('#message-input').val();
+                const channel = $('#channel-select').val();
+                if (message && channel) {
+                    frappe.call({
+                        method: 'omnichat.omnichat.api.send_message',
+                        args: {
+                            sender_id: 'test_user', // ต้องเปลี่ยนเป็น sender_id จริง
+                            channel_name: channel,
+                            message_type: 'Text',
+                            content: message
+                        },
+                        callback: function(r) {
+                            if (r.message.status === 'success') {
+                                $('#message-input').val('');
+                                location.reload();
+                            }
+                        }
+                    });
+                }
+            });
+
+            // อัพโหลดไฟล์
+            $('#file-btn').click(function() {
+                $('#file-input').click();
+            });
+
+            $('#file-input').change(function(e) {
+                const file = e.target.files[0];
+                const channel = $('#channel-select').val();
+                if (file && channel) {
+                    const form_data = new FormData();
+                    form_data.append('file', file);
+                    
+                    $.ajax({
+                        url: '/api/method/upload_file',
+                        type: 'POST',
+                        data: form_data,
+                        processData: false,
+                        contentType: false,
+                        success: function(r) {
+                            const file_url = r.message.file_url;
+                            const message_type = file.type.includes('image') ? 'Image' :
+                                file.type.includes('video') ? 'Video' : 'File';
+                                
+                            frappe.call({
+                                method: 'omnichat.omnichat.api.send_message',
+                                args: {
+                                    sender_id: 'test_user', // ต้องเปลี่ยนเป็น sender_id จริง
+                                    channel_name: channel,
+                                    message_type: message_type,
+                                    file_url: file_url
+                                },
+                                callback: function(r) {
+                                    if (r.message.status === 'success') {
+                                        location.reload();
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

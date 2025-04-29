@@ -1,0 +1,122 @@
+
+{
+    "name": "LINE Channel",
+    "doctype": "DocType",
+    "fields": [
+     {
+      "fieldname": "channel_name",
+      "fieldtype": "Data",
+      "label": "Channel Name",
+      "reqd": 1
+     },
+     {
+      "fieldname": "channel_access_token",
+      "fieldtype": "Password",
+      "label": "Channel Access Token",
+      "reqd": 1
+     },
+     {
+      "fieldname": "channel_secret",
+      "fieldtype": "Password",
+      "label": "Channel Secret",
+      "reqd": 1
+     },
+     {
+      "fieldname": "webhook_url",
+      "fieldtype": "Data",
+      "label": "Webhook URL",
+      "read_only": 1
+     }
+    ],
+    "permissions": [
+     {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 1
+     }
+    ],
+    "autoname": "field:channel_name",
+    "creation": "2025-04-29",
+    "modified": "2025-04-29",
+    "owner": "Administrator",
+    "idx": 0
+   }
+   
+   # omnichat/omnichat/doctype/omnichat_message/omnichat_message.json
+   {
+    "name": "Omnichat Message",
+    "doctype": "DocType",
+    "fields": [
+     {
+      "fieldname": "sender_id",
+      "fieldtype": "Data",
+      "label": "Sender ID",
+      "reqd": 1
+     },
+     {
+      "fieldname": "channel",
+      "fieldtype": "Link",
+      "label": "LINE Channel",
+      "options": "LINE Channel",
+      "reqd": 1
+     },
+     {
+      "fieldname": "message_type",
+      "fieldtype": "Select",
+      "label": "Message Type",
+      "options": "Text\nImage\nVideo\nFile",
+      "reqd": 1
+     },
+     {
+      "fieldname": "message_content",
+      "fieldtype": "Text",
+      "label": "Message Content"
+     },
+     {
+      "fieldname": "file_url",
+      "fieldtype": "Attach",
+      "label": "File URL"
+     },
+     {
+      "fieldname": "timestamp",
+      "fieldtype": "Datetime",
+      "label": "Timestamp",
+      "reqd": 1
+     },
+     {
+      "fieldname": "is_incoming",
+      "fieldtype": "Check",
+      "label": "Is Incoming",
+      "default": 0
+     },
+     {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Pending\nSent\nDelivered\nRead",
+      "default": "Pending"
+     }
+    ],
+    "permissions": [
+     {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 1
+     },
+     {
+      "role": "All",
+      "read": 1
+     }
+    ],
+    "autoname": "format:OMNI-{#####}",
+    "creation": "2025-04-29",
+    "modified": "2025-04-29",
+    "owner": "Administrator",
+    "idx": 0,
+    "is_submittable": 0,
+    "allow_rename": 1
+   }

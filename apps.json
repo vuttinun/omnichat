@@ -1,0 +1,8 @@
+{
+    "name": "OmniChat",
+    "version": "1.0.1",
+    "description": "OmniChat integration with multiple LINE Messaging API accounts for ERPNext",
+    "author": "Vuttinun",
+    "license": "MIT",
+    "dependencies": {}
+   }
